@@ -3,25 +3,25 @@ import hero from '../assets/images/hero.jpg';
 import type { SiteConfig } from '../types';
 
 const siteConfig: SiteConfig = {
-    website: 'https://example.com',
+    website: 'https://nicolasrincon757-glitch.github.io',
     avatar: {
         src: avatar,
         alt: 'Ethan Donovan'
     },
-    title: 'Dante',
-    subtitle: 'Minimal Astro.js theme',
-    description: 'Astro.js and Tailwind CSS theme for blog and portfolio by justgoodui.com',
+    title: 'Nicolás Santiago Rincón Colorado',
+    subtitle: 'Blog & Portafolio',
+    description: 'Pagina dedicada a documentar mis proyectos',
     image: {
         src: '/dante-preview.jpg',
         alt: 'Dante - Astro.js and Tailwind CSS theme'
     },
     headerNavLinks: [
         {
-            text: 'Home',
+            text: 'Inicio',
             href: '/'
         },
         {
-            text: 'Projects',
+            text: 'Projectos',
             href: '/projects'
         },
         {
@@ -53,8 +53,8 @@ const siteConfig: SiteConfig = {
     ],
     socialLinks: [
         {
-            text: 'Dribbble',
-            href: 'https://dribbble.com/'
+            text: 'Facebook',
+            href: 'https://facebook.com/'
         },
         {
             text: 'Instagram',
@@ -66,8 +66,8 @@ const siteConfig: SiteConfig = {
         }
     ],
     hero: {
-        title: 'Hi There & Welcome to My Corner of the Web!',
-        text: "I'm **Ethan Donovan**, a web developer at Amazing Studio, dedicated to the realms of collaboration and artificial intelligence.\nMy approach involves embracing intuition, conducting just enough research, and leveraging aesthetics as a catalyst for exceptional products.\nI have a profound appreciation for top-notch software, visual design, and the principles of product-led growth.\n\nFeel free to explore some of my coding endeavors on [GitHub](https://github.com/JustGoodUI/dante-astro-theme) or follow me on [Twitter/X](https://twitter.com/justgoodui).",
+        title: 'Hola! Bienvenido a mi sitio web :D',
+        text: "Hola, mi nombre es Nicolas y esta sera mia pagina dedicada a subir todos mis proyectos relacionados con programacion, asi mismo soy estudiante de Ingenieria de Sistemas en la Universidad El Bosque UEB, tengo 20 años y voy en 4to semestre de la carrera, tengo altas espectativas tanto con el portafolio como con lo que se pueda desarrollar a lo largo de este curso.",
         image: {
             src: hero,
             alt: 'A person sitting at a desk in front of a computer'
@@ -81,8 +81,8 @@ const siteConfig: SiteConfig = {
     },
     subscribe: {
         enabled: true,
-        title: 'Subscribe to Dante Newsletter',
-        text: 'One update per week. All the latest posts directly in your inbox.',
+        title: 'Juntoooos, caminemos juntoooos',
+        text: 'Tratare de mantenerlo actualizado, o eso espero.',
         form: {
             action: '#'
         }
