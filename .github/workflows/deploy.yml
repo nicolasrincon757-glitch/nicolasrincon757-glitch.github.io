@@ -28,11 +28,12 @@ jobs:
 
       - name: Instalar, construir y subir el sitio
         uses: withastro/action@v3
-        # Por defecto usa Node 20 y detecta automáticamente
-        # npm / yarn / pnpm según el lockfile del proyecto.
-        # with:
-        #   node-version: 20
-        #   package-manager: pnpm@latest
+        # Astro 5 requiere Node >=18.20.8, >=20.3.0 o >=22.0.0
+        # Fijamos Node 22 explícitamente porque el runner por defecto
+        # trae una versión de Node 20 no soportada.
+        with:
+          node-version: 22
+          # package-manager: pnpm@latest
 
   deploy:
     needs: build
