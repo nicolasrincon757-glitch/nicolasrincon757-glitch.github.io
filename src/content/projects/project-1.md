@@ -1,7 +1,8 @@
 ---
 title: "1. Estructura y Creación de Tablas (DDL)"
 description: "Definición del esquema relacional de la base de datos ConduCar con sus 13 tablas, llaves primarias, foráneas y restricciones de integridad."
-order: 1
+publishDate: 2026-11-01
+isFeatured: true
 ---
 
 # 1. Creación de la Base de Datos y Tablas (`ConduCar`)

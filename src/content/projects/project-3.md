@@ -1,7 +1,8 @@
 ---
 title: "3. Gestión de Usuarios y Privilegios (DCL)"
 description: "Configuración de roles de acceso en MySQL bajo el principio de mínimo privilegio para la base de datos ConduCar."
-order: 3
+publishDate: 2026-11-03
+isFeatured: true
 ---
 
 # 3. Seguridad y Control de Acceso (`ConduCar`)

@@ -1,7 +1,8 @@
 ---
 title: "6. Taller de Álgebra Relacional"
 description: "Diseño de 8 expresiones formales en álgebra relacional sobre un esquema universitario utilizando selección, proyección, reuniones, diferencia de conjuntos y división relacional."
-order: 6
+publishDate: 2026-11-06
+isFeatured: true
 ---
 
 # 6. Taller de Álgebra Relacional

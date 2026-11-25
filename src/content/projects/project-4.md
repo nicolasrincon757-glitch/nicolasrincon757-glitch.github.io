@@ -1,7 +1,8 @@
 ---
 title: "4. Consultas SQL y Reportes de Negocio (DQL)"
 description: "Batería de 62 consultas SQL que cubren filtros, combinaciones, operaciones de conjuntos, división relacional, agregaciones y subconsultas."
-order: 4
+publishDate: 2026-11-04
+isFeatured: true
 ---
 
 # 4. Consultas Operativas y Analíticas (`ConduCar`)

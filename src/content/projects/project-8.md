@@ -1,7 +1,8 @@
 ---
 title: "8. Taller Avanzado de Normalización hasta 3FN"
 description: "Descomposición formal hasta Tercera Forma Normal (3FN) de dos sistemas complejos con grupos repetitivos anidados y múltiples dependencias transitivas."
-order: 8
+publishDate: 2026-11-08
+isFeatured: true
 ---
 
 # 8. Taller Avanzado de Normalización hasta 3FN

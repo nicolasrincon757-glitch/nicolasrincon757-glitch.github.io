@@ -1,7 +1,8 @@
 ---
 title: "2. Inserción de Datos Iniciales (DML)"
 description: "Poblado de las 13 tablas de ConduCar respetando el orden de integridad referencial para pruebas y operación."
-order: 2
+publishDate: 2026-11-02
+isFeatured: true
 ---
 
 # 2. Carga Inicial de Datos (`ConduCar`)

@@ -1,7 +1,8 @@
 ---
 title: "5. Verificación y Auditoría de Integridad (CHECKS)"
 description: "Script de validación sobre el diccionario de datos de MySQL (information_schema) y reglas de negocio de ConduCar."
-order: 5
+publishDate: 2026-11-05
+isFeatured: true
 ---
 
 # 5. Verificación de Esquema y Reglas de Negocio (`ConduCar`)

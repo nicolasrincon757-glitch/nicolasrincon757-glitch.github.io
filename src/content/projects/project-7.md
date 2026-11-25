@@ -1,7 +1,8 @@
 ---
 title: "7. Taller de Normalización de Bases de Datos (1FN, 2FN, 3FN y BCNF)"
 description: "Análisis de formas normales, identificación de dependencias funcionales y descomposición paso a paso hasta 3FN y BCNF en cinco casos prácticos."
-order: 7
+publishDate: 2026-11-07
+isFeatured: true
 ---
 
 # 7. Taller de Normalización de Bases de Datos
