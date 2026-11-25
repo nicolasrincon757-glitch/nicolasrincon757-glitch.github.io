@@ -1,61 +1,58 @@
 ---
-title: FitQuest - AR Fitness Adventure Game
-description: This web application encourages users to embark on thrilling adventures, complete challenges, and achieve fitness goals in an engaging virtual environment.
-publishDate: 'Dec 28 2023'
-seo:
-  image:
-    src: '../../assets/images/project-6.jpg'
+title: "6. Taller de Álgebra Relacional"
+description: "Diseño de 8 expresiones formales en álgebra relacional sobre un esquema universitario utilizando selección, proyección, reuniones, diferencia de conjuntos y división relacional."
+order: 6
 ---
 
-![Project preview](../../assets/images/project-6.jpg)
+# 6. Taller de Álgebra Relacional
 
-**Note:** This case study is entirely fictional and created for the purpose of showcasing [Dante Astro.js theme functionality](https://justgoodui.com/astro-themes/dante/).
+Este documento presenta el diseño formal de **8 consultas en álgebra relacional** aplicadas sobre un modelo de gestión de empleados universitarios, abordando filtros compuestos, reuniones naturales, productos cartesianos, diferencia de conjuntos y división relacional.
 
-**Project Overview:**
-FitQuest is an augmented reality (AR) fitness adventure game that revolutionizes traditional workout routines by combining physical exercise with immersive gameplay. This web application encourages users to embark on thrilling adventures, complete challenges, and achieve fitness goals in an engaging virtual environment.
+## Esquema Relacional Base
 
-## Objectives
+- `empleado(cod_emp, nombre-empleado, calle, ciudad)`
+- `trabaja(cod_emp, cod_uni, sueldo_mensual)`
+- `Universidad(cod_uni, nombre_uni, cuidad)`
+- `jefe(cod_jefe, nombre_jefe, calle, ciudad)`
 
-1. Develop a fitness app that leverages augmented reality to make workouts more enjoyable and interactive.
-2. Integrate real-world locations and landmarks into the game, turning everyday environments into exciting adventure settings.
-3. Motivate users to stay active and maintain a consistent fitness routine by blending physical activity with a captivating storyline.
+## Soluciones
 
-## Features
+### 1. Empleados que trabajan para la Universidad Central
+Combina `empleado`, `trabaja` y `Universidad` mediante reunión natural ($\bowtie$), filtra por el nombre de la institución y proyecta el nombre del empleado:
 
-1. **Augmented Reality Workouts:**
+$$\pi_{\text{nombre-empleado}}\Big(\sigma_{\text{nombre\_uni} = \text{'Universidad Central'}}(\text{empleado} \bowtie \text{trabaja} \bowtie \text{Universidad})\Big)$$
 
-- FitQuest utilizes AR technology to overlay game elements onto the real-world environment, creating an immersive and dynamic workout experience.
-- Users engage in exercises that align with the game's storyline while interacting with virtual elements superimposed on their surroundings.
+### 2. Nombre y ciudad de residencia de empleados de la Universidad de Los Andes
+Filtra las asignaciones laborales correspondientes a `Universidad de Los Andes` y proyecta los datos de identificación y residencia desde `empleado`:
 
-2. **Interactive Storyline and Challenges:**
+$$\pi_{\text{nombre-empleado},\, \text{ciudad}}\Big(\sigma_{\text{nombre\_uni} = \text{'Universidad de Los Andes'}}(\text{empleado} \bowtie \text{trabaja} \bowtie \text{Universidad})\Big)$$
 
-- The app features an adventure-driven storyline where users embark on quests and missions to complete fitness challenges.
-- Challenges include cardio exercises, strength training, and flexibility workouts, seamlessly integrated into the game's narrative.
+### 3. Empleados de la Universidad Central con salario anual superior a $25'000.000$
+Convierte el atributo `sueldo_mensual` a ingreso anual ($\text{sueldo\_mensual} \times 12 > 25000000$) dentro del predicado de selección:
 
-3. **Real-World Landmarks Integration:**
+$$\pi_{\text{nombre-empleado},\, \text{calle},\, \text{ciudad}}\Big(\sigma_{\text{nombre\_uni} = \text{'Universidad Central'} \,\land\, (\text{sueldo\_mensual} \times 12 > 25000000)}(\text{empleado} \bowtie \text{trabaja} \bowtie \text{Universidad})\Big)$$
 
-- FitQuest incorporates real-world landmarks and locations as key elements in the game, turning parks, streets, and other environments into virtual fitness arenas.
-- Users explore these locations while completing fitness challenges and unlocking new levels.
+### 4. Empleados que viven en la misma ciudad que la universidad donde trabajan
+Compara la ciudad de residencia del empleado (`empleado.ciudad`) con la ubicación de la universidad (`Universidad.cuidad`):
 
-4. **Multiplayer Mode and Team Challenges:**
+$$\pi_{\text{nombre-empleado}}\Big(\sigma_{\text{empleado.ciudad} = \text{Universidad.cuidad}}(\text{empleado} \bowtie \text{trabaja} \bowtie \text{Universidad})\Big)$$
 
-- Users can connect with friends or join teams to participate in multiplayer challenges.
-- Team-based missions encourage collaboration and friendly competition, enhancing the social aspect of fitness.
+### 5. Empleados que viven en la misma ciudad y calle que sus jefes
+Empareja las relaciones `empleado` y `jefe` verificando igualdad simultánea en los atributos `ciudad` y `calle`:
 
-5. **Fitness Tracking and Progress Monitoring:**
+$$\pi_{\text{nombre-empleado}}\Big(\sigma_{\text{empleado.ciudad} = \text{jefe.ciudad} \,\land\, \text{empleado.calle} = \text{jefe.calle}}(\text{empleado} \times \text{jefe})\Big)$$
 
-- The app includes a comprehensive fitness tracking system that monitors users' progress, calories burned, and achievements.
-- Users can set personalized fitness goals and track their improvement over time.
+### 6. Empleados que no trabajan para la Universidad Central
+Utiliza **diferencia de conjuntos ($-$)** sobre la llave primaria `cod_emp` para garantizar que no se incluyan empleados con múltiples contratos ni se pierdan empleados sin asignación o con nombres homónimos:
 
-## Technology Stack
+$$\pi_{\text{nombre-empleado}}\Bigg(\text{empleado} \bowtie \Big(\pi_{\text{cod\_emp}}(\text{empleado}) - \pi_{\text{cod\_emp}}\big(\sigma_{\text{nombre\_uni} = \text{'Universidad Central'}}(\text{trabaja} \bowtie \text{Universidad})\big)\Big)\Bigg)$$
 
-- Frontend: Unity for AR game development.
-- Backend: Node.js for handling server-side logic and real-time data synchronization.
-- Database: MongoDB for storing user profiles, fitness data, and game progress.
-- AR Integration: ARCore (Android) and ARKit (iOS) for augmented reality features.
+### 7. Empleados que ganan más que cualquier empleado de la Universidad de Los Andes
+Expresa el cuantificador universal ("más que todos") mediante diferencia de conjuntos, descartando a todo trabajador cuyo salario sea menor o igual ($\le$) al de algún empleado de la Universidad de Los Andes:
 
-## Outcome
+$$\pi_{\text{nombre-empleado}}\Bigg(\text{empleado} \bowtie \Big(\pi_{\text{cod\_emp}}(\text{trabaja}) - \pi_{\text{trabaja.cod\_emp}}\big(\sigma_{\text{trabaja.sueldo\_mensual} \le \text{sueldo\_andes}}(\text{trabaja} \times \rho_{\text{S}(\text{sueldo\_andes})}(\pi_{\text{sueldo\_mensual}}(\sigma_{\text{nombre\_uni} = \text{'Universidad de Los Andes'}}(\text{trabaja} \bowtie \text{Universidad}))))\big)\Big)\Bigg)$$
 
-FitQuest has transformed the fitness landscape by merging physical activity with immersive gaming experiences. Users not only enjoy staying active but also find motivation in the storyline and challenges, creating a unique and entertaining approach to maintaining a healthy lifestyle.
+### 8. Universidades instaladas en cada ciudad donde opera la Universidad Nacional de Colombia
+Aplica **división relacional ($\div$)** entre los pares `(nombre_uni, cuidad)` y el conjunto de sedes de la Universidad Nacional de Colombia:
 
-**Note:** This case study is entirely fictional and created for the purpose of showcasing [Dante Astro.js theme functionality](https://justgoodui.com/astro-themes/dante/).
+$$\pi_{\text{nombre\_uni},\, \text{cuidad}}(\text{Universidad}) \div \pi_{\text{cuidad}}\Big(\sigma_{\text{nombre\_uni} = \text{'Universidad Nacional de Colombia'}}(\text{Universidad})\Big)$$
