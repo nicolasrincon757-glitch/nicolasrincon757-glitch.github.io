@@ -1,64 +1,101 @@
 ---
-title: 'TimeWarp - Travel Agency Website'
-description: Explore the possibilities of time travel through an immersive website for a fictional travel agency, complete with dynamic destination timelines and interactive historical events.
-publishDate: 'Oct 2 2023'
-isFeatured: true
-seo:
-  image:
-    src: '../../assets/images/project-2.jpg'
-    alt: Project preview
+title: "2. Inserción de Datos Iniciales (DML)"
+description: "Poblado de las 13 tablas de ConduCar respetando el orden de integridad referencial para pruebas y operación."
+order: 2
 ---
 
-![Project preview](../../assets/images/project-2.jpg)
+# 2. Carga Inicial de Datos (`ConduCar`)
 
-**Note:** This case study is entirely fictional and created for the purpose of showcasing [Dante Astro.js theme functionality](https://justgoodui.com/astro-themes/dante/).
+Este script (DML) inserta los registros base y transaccionales en cada una de las 13 tablas del sistema para simular escenarios reales de operación.
 
-**Project Overview:**
-TimeWarp Travel Agency aims to redefine the travel experience by offering an innovative and immersive online platform that explores the concept of time travel. The website combines cutting-edge technology with captivating storytelling to provide users with a unique journey through time.
+## ¿Cómo funciona?
 
-> Working with Ethan Donovan was a game-changer for our online presence. Their innovative solutions and attention to detail turned our vision into a reality. The website not only looks fantastic but also functions seamlessly. A true professional who exceeded our expectations!
+- **Orden jerárquico de inserción:** Carga primero las tablas padre (`categoria_licencia`, `alumno`, `instructor`, `modulo`) antes que las tablas hijas (`matricula`, `pago`, `clase`, `examen`, `certificado_aptitud`) para evitar errores de llaves foráneas.
+- **Escenarios representados:**
+  - **Categorías y planes de estudio:** Registra las 8 categorías oficiales (`A1` a `C3`), configurando tarifas y distribución horaria por módulo (teoría, taller y práctica) para las categorías ofertadas (`A2`, `B1` y `C1`).
+  - **Alumnos y certificados CRC:** Incluye estudiantes con distintos documentos (`CC`, `TI`) y resultados médicos (`APTO` y `NO APTO`).
+  - **Flota e instructores:** Asocia instructores activos con sus categorías habilitadas y vehículos disponibles con fechas de vigencia de SOAT y Revisión Técnico-Mecánica (RTM).
+  - **Ciclo completo de matrícula:** Simula matrículas en estado `FINALIZADA`, `CANCELADA` y `ACTIVA`, junto con sus abonos, clases dictadas o canceladas, exámenes teóricos/prácticos y certificados expedidos.
 
-## Objectives
+## Código SQL
 
-1. Create a visually stunning and user-friendly website that captures the essence of time travel.
-2. Integrate interactive elements to engage users and make the experience memorable.
-3. Develop a responsive design to ensure a seamless user experience across various devices.
+```sql
+USE conducar;
 
-## Features
+INSERT INTO categoria_licencia (codigo_categoria, descripcion, tipo_servicio, edad_minima, valor_curso) VALUES 
+('A1', 'Motocicletas con cilindrada hasta 125 c.c.', 'PARTICULAR', 16, NULL), 
+('A2', 'Motocicletas, motociclos y mototriciclos con cilindrada mayor a 125 c.c.', 'PARTICULAR', 16, 950000), 
+('B1', 'Automóviles, motocarros, cuatrimotos, camperos, camionetas y microbuses de servicio particular', 'PARTICULAR', 16, 1250000), 
+('B2', 'Camiones rígidos, busetas y buses de servicio particular', 'PARTICULAR', 18, NULL), 
+('B3', 'Vehículos articulados de servicio particular', 'PARTICULAR', 18, NULL), 
+('C1', 'Automóviles, camperos, camionetas y microbuses de servicio público', 'PUBLICO', 18, 1550000), 
+('C2', 'Camiones rígidos, busetas y buses de servicio público', 'PUBLICO', 18, NULL), 
+('C3', 'Vehículos articulados de servicio público', 'PUBLICO', 18, NULL);
 
-1. **Dynamic Destination Timelines:**
+INSERT INTO alumno (id_alumno, tipo_documento, numero_documento, nombres, apellidos, fecha_nacimiento, telefono, correo, fecha_registro) VALUES 
+(1, 'CC', '1089106819', 'Juan Diego', 'Contreras Dager', '2005-03-22', '3158678186', 'JuanDiContreras@gmail.com', '2026-01-08'), 
+(2, 'TI', '1016953204', 'Laura', 'Morales Camargo', '2009-02-19', '3004434632', 'lauraMorales@gmail.com', '2026-01-10'), -- Corregido: fecha_registro antes de su certificado CRC
+(3, 'CC', '1046321078', 'Nicolas Santiago', 'Rincon Colorado', '2007-03-11', '3019301581', 'NicolasRincon@gmail.com', '2026-01-17');
 
-- Users can explore destinations through dynamic timelines, showcasing significant historical events, cultural developments, and architectural milestones.
-- Interactive sliders allow users to navigate through different eras, providing a visual representation of the historical evolution of each location.
+INSERT INTO certificado_crc (id_certificado, id_alumno, nombre_crc, fecha_examen, resultado) VALUES 
+(1, 1, 'CRC Medicar Suba', '2026-01-08', 'APTO'), 
+(2, 2, 'CRC Salud Vial Norte', '2026-01-12', 'NO APTO'), 
+(3, 3, 'CRC Medicar Suba', '2026-01-19', 'APTO');
 
-2. **Interactive Historical Events:**
+INSERT INTO instructor (id_instructor, numero_documento, nombres, apellidos, telefono, correo, numero_licencia_instructor, fecha_venc_licencia, estado) VALUES 
+(1, '79334130', 'Luis', 'Morales Adame', '3198056747', 'luis.Morales@conducar.edu.co', 'INS-2037', '2027-08-31', 'ACTIVO'), 
+(2, '79887507', 'Ana María', 'Rodriguez Jimenez', '3198400346', 'ana.Rodriguez@conducar.edu.co', 'INS-2074', '2028-10-01', 'ACTIVO'), 
+(3, '79956436', 'Samuel', 'González Martínez', '3118543956', 'samuel.gonzalez@conducar.edu.co', 'INS-2111', '2026-11-23', 'ACTIVO');
 
-- Users can click on specific points in the timeline to reveal detailed information about key historical events related to the chosen destination.
-- Rich multimedia content, including images, videos, and articles, provides a comprehensive understanding of each event.
+INSERT INTO instructor_categoria (id_instructor, codigo_categoria, fecha_habilitacion) VALUES 
+(1, 'A2', '2023-04-07'), 
+(1, 'B1', '2022-12-21'), 
+(1, 'C1', '2020-11-01'), 
+(2, 'A2', '2021-04-18'), 
+(2, 'B1', '2022-12-21'), 
+(3, 'B1', '2023-10-19'), 
+(3, 'C1', '2020-11-01');
 
-3. **Personalized Time Travel Planner:**
+INSERT INTO vehiculo (placa, codigo_categoria, tipo_vehiculo, marca, linea, modelo_anio, transmision, estado, fecha_venc_soat, fecha_venc_rtm) VALUES 
+('ABC12F', 'A2', 'MOTOCICLETA', 'Yamaha', 'XTZ 150', 2023, 'MECANICA', 'DISPONIBLE', '2027-08-19', '2027-08-26'), 
+('LMN789', 'B1', 'AUTOMOVIL', 'Kia', 'Picanto', 2024, 'AUTOMATICA', 'DISPONIBLE', '2027-05-28', '2027-05-15'), 
+('OPQ567', 'C1', 'CAMIONETA', 'Chevrolet', 'N400 Max', 2023, 'MECANICA', 'DISPONIBLE', '2027-07-01', '2027-04-10');
 
-- A personalized planner feature enables users to create their time travel itineraries by selecting specific eras and destinations.
-- The system suggests thematic experiences, such as attending historical events or meeting famous personalities.
+INSERT INTO modulo (id_modulo, nombre, tipo, descripcion) VALUES 
+(1, 'Movilidad segura y sostenible', 'TEORIA', 'Factores de riesgo, actores viales vulnerables, alcohol, fatiga y distracciones.'), 
+(2, 'Normas de tránsito', 'TEORIA', 'Código Nacional de Tránsito, infracciones, sanciones, prelación y documentos del conductor.'), 
+(3, 'Señalización e infraestructura vial', 'TEORIA', 'Señales verticales, horizontales, semáforos y dispositivos de control.'),
+(4, 'Revisión preoperacional', 'TALLER', 'Inspección de llantas, luces, frenos, niveles y documentos antes de conducir.'), 
+(5, 'Conducción en carretera', 'PRACTICA', 'Adelantamiento, conducción en pendiente y frenado de emergencia.');
 
-4. **Time-Port Virtual Reality Experience:**
+INSERT INTO plan_curso (codigo_categoria, id_modulo, horas) VALUES 
+('A2', 1, 8), ('B1', 1, 8), ('C1', 1, 8), 
+('A2', 2, 1), ('B1', 2, 2), ('C1', 2, 2), 
+('A2', 3, 3), ('B1', 3, 5), ('C1', 3, 10),
+('A2', 4, 3), ('A2', 5, 15), ('B1', 4, 5), ('B1', 5, 20), ('C1', 4, 5), ('C1', 5, 30);
 
-- For an extra layer of immersion, users can opt for the Time-Port VR experience, allowing them to virtually step into different time periods and explore the surroundings in 360 degrees.
+INSERT INTO matricula (id_matricula, id_alumno, codigo_categoria, fecha_matricula, valor_pactado, estado) VALUES 
+(1, 1, 'A2', '2026-01-10', 950000, 'FINALIZADA'), 
+(2, 2, 'B1', '2026-01-25', 1250000, 'CANCELADA'), 
+(3, 3, 'C1', '2026-01-13', 1550000, 'ACTIVA');
 
-5. **Chronicle Explorer Blog:**
+INSERT INTO pago (id_pago, id_matricula, fecha_pago, valor, medio_pago) VALUES 
+(1, 1, '2026-01-11', 775000.0, 'EFECTIVO'), 
+(2, 2, '2026-02-03', 1350000.0, 'TRANSFERENCIA'), 
+(3, 3, '2026-01-14', 1700000.0, 'TARJETA');
 
-- A blog section, "Chronicle Explorer," offers in-depth articles and stories about various historical periods and their impact on the destinations featured on the platform.
-- Users can engage with the content, comment, and share their own historical insights.
+INSERT INTO clase (id_clase, id_matricula, id_modulo, id_instructor, placa, fecha, hora_inicio, horas, estado) VALUES 
+(1, 1, 1, 1, NULL, '2026-03-12', '09:00:00', 4, 'DICTADA'), 
+(2, 2, 2, 2, 'LMN789', '2026-02-28', '16:00:00', 2, 'CANCELADA'), 
+(3, 3, 3, 3, 'OPQ567', '2026-02-28', '07:00:00', 4, 'DICTADA'); 
 
-## Technology Stack
+INSERT INTO examen (id_examen, id_matricula, tipo, fecha, puntaje, id_instructor) VALUES 
+(1, 1, 'TEORICO', '2026-03-20', 88.73, 1), 
+(2, 2, 'TEORICO', '2026-03-21', 62.50, 2), 
+(3, 3, 'PRACTICO', '2026-03-06', 89.69, 3);
 
-- **Frontend:** [Astro.js](https://astro.build/) for a dynamic and responsive user interface and [Tailwind CSS](https://tailwindcss.com/) for styling.
-- **Backend:** Node.js for handling server-side logic and API integration.
-- **Database:** MongoDB for efficient storage and retrieval of historical data.
-- **VR Integration:** A-Frame framework for creating immersive virtual reality experiences.
-
-## Outcome
-
-The TimeWarp Travel Agency Website successfully brings the concept of time travel to life, providing users with a captivating and educational experience. The website not only serves as a travel planning tool but also as an interactive platform that encourages users to explore and appreciate the rich tapestry of human history.
-
-**Note:** This case study is entirely fictional and created for the purpose of showcasing [Dante Astro.js theme functionality](https://justgoodui.com/astro-themes/dante/).
+INSERT INTO certificado_aptitud (id_certificado, id_matricula, numero_certificado, fecha_expedicion) VALUES 
+(1, 1, 'CAC-2026-00001', '2026-03-22'), 
+(2, 2, 'CAC-2026-00002', '2026-03-22'), 
+(3, 3, 'CAC-2026-00003', '2026-04-07');
+```

@@ -1,66 +1,180 @@
 ---
-title: 'EcoBuddy: Sustainable Living App'
-description: EcoBuddy is a mobile app that gamifies sustainable living. Users can set eco-friendly goals, track their carbon footprint, and earn virtual rewards for adopting environmentally conscious habits.
-publishDate: 'Jan 02 2024'
-seo:
-  image:
-    src: '../../assets/images/project-1.jpg'
-    alt: Project preview
+title: "1. Estructura y Creación de Tablas (DDL)"
+description: "Definición del esquema relacional de la base de datos ConduCar con sus 13 tablas, llaves primarias, foráneas y restricciones de integridad."
+order: 1
 ---
 
-![Project preview](../../assets/images/project-1.jpg)
+# 1. Creación de la Base de Datos y Tablas (`ConduCar`)
 
-**Note:** This case study is entirely fictional and created for the purpose of showcasing [Dante Astro.js theme functionality](https://justgoodui.com/astro-themes/dante/).
+Este script define toda la estructura física (DDL) de la base de datos **`conducar`**, diseñada para gestionar una escuela de automovilismo.
 
-**Project Overview:**
-EcoBuddy is a revolutionary mobile application designed to make sustainable living accessible, engaging, and rewarding. With a focus on gamification and real-world impact, EcoBuddy encourages users to adopt eco-friendly habits, reduce their carbon footprint, and contribute to a healthier planet.
+## ¿Cómo funciona?
 
-## Objectives
+1. **Inicialización del esquema:** Crea la base de datos `conducar` y la selecciona como espacio de trabajo activo (`USE conducar`).
+2. **Catálogos y entidades base:** Define las tablas maestras que no dependen de otras (`categoria_licencia`, `alumno`, `instructor`, `modulo`).
+3. **Tablas dependientes y transaccionales:** Crea las entidades que registran la operación diaria (`certificado_crc`, `vehiculo`, `matricula`, `pago`, `clase`, `examen`, `certificado_aptitud`) y las tablas puente para relaciones muchos a muchos (`instructor_categoria`, `plan_curso`).
+4. **Reglas de integridad incorporadas:**
+   - **Llaves primarias (`PRIMARY KEY`) y foráneas (`FOREIGN KEY`):** Garantizan la integridad referencial entre alumnos, matrículas, instructores, vehículos y evaluaciones.
+   - **Unicidad (`UNIQUE`):** Evita duplicados en correos electrónicos, números de documento, licencias de instructor, nombres de módulo y certificados de aptitud.
+   - **Validaciones de dominio (`CHECK`):** Restringe valores permitidos en estados (`ACTIVA`, `DICTADA`, `DISPONIBLE`), tipos de documento (`CC`, `TI`, `CE`, `PA`), puntajes (`0` a `100`), intensidad horaria (`1` a `4` horas por clase) y edad mínima (`>= 16` años).
 
-1. Develop a user-friendly mobile app that motivates individuals to adopt sustainable practices in their daily lives.
-2. Utilize gamification elements to make sustainable living fun and interactive.
-3. Provide educational resources and personalized challenges to empower users to make informed eco-conscious decisions.
+## Código SQL
 
-## Features
+```sql
+CREATE DATABASE conducar;
+USE conducar;
 
-1. **EcoScore and Challenges:**
+CREATE TABLE categoria_licencia (
+  codigo_categoria VARCHAR(2) PRIMARY KEY,
+  descripcion VARCHAR(150) NOT NULL,
+  tipo_servicio VARCHAR(10) NOT NULL,
+  edad_minima SMALLINT NOT NULL,
+  valor_curso DECIMAL(10,2),
+  CHECK (tipo_servicio IN ('PARTICULAR','PUBLICO')),
+  CHECK (edad_minima >= 16)
+);
 
-- Users are assigned an EcoScore based on their sustainable activities and choices.
-- Daily and weekly challenges encourage users to adopt new habits and compete with friends or the community to earn EcoPoints.
+CREATE TABLE alumno (
+  id_alumno INT PRIMARY KEY,
+  tipo_documento VARCHAR(2) NOT NULL,
+  numero_documento VARCHAR(15) NOT NULL,
+  nombres VARCHAR(60) NOT NULL,
+  apellidos VARCHAR(60) NOT NULL,
+  fecha_nacimiento DATE NOT NULL,
+  telefono VARCHAR(15),
+  correo VARCHAR(100) NOT NULL UNIQUE,
+  fecha_registro DATE NOT NULL,
+  UNIQUE (tipo_documento, numero_documento),
+  CHECK (tipo_documento IN ('CC','TI','CE','PA'))
+);
 
-2. **Personalized Eco-Goals:**
+CREATE TABLE certificado_crc (
+  id_certificado INT PRIMARY KEY,
+  id_alumno INT NOT NULL,
+  nombre_crc VARCHAR(80) NOT NULL,
+  fecha_examen DATE NOT NULL,
+  resultado VARCHAR(8) NOT NULL,
+  CHECK (resultado IN ('APTO','NO APTO')),
+  FOREIGN KEY (id_alumno) REFERENCES alumno(id_alumno)
+);
 
-- Users can set and track personalized eco-goals, such as reducing plastic usage, conserving water, or choosing eco-friendly transportation.
-- The app provides tips and suggestions to help users achieve their goals.
+CREATE TABLE instructor (
+  id_instructor INT PRIMARY KEY,
+  numero_documento VARCHAR(15) NOT NULL UNIQUE,
+  nombres VARCHAR(60) NOT NULL,
+  apellidos VARCHAR(60) NOT NULL,
+  telefono VARCHAR(15),
+  correo VARCHAR(100) NOT NULL UNIQUE,
+  numero_licencia_instructor VARCHAR(20) NOT NULL UNIQUE,
+  fecha_venc_licencia DATE NOT NULL,
+  estado VARCHAR(8) NOT NULL,
+  CHECK (estado IN ('ACTIVO','INACTIVO'))
+);
 
-3. **Green Rewards Marketplace:**
+CREATE TABLE instructor_categoria (
+  id_instructor INT NOT NULL,
+  codigo_categoria VARCHAR(2) NOT NULL,
+  fecha_habilitacion DATE NOT NULL,
+  PRIMARY KEY (id_instructor, codigo_categoria),
+  FOREIGN KEY (id_instructor) REFERENCES instructor(id_instructor),
+  FOREIGN KEY (codigo_categoria) REFERENCES categoria_licencia(codigo_categoria)
+);
 
-- EcoPoints earned through challenges and sustainable actions can be redeemed in a virtual Green Rewards Marketplace.
-- The marketplace offers discounts on eco-friendly products, services, and even contributions to environmental causes.
+CREATE TABLE vehiculo (
+  placa VARCHAR(7) PRIMARY KEY,
+  codigo_categoria VARCHAR(2) NOT NULL,
+  tipo_vehiculo VARCHAR(12) NOT NULL,
+  marca VARCHAR(30) NOT NULL,
+  linea VARCHAR(30) NOT NULL,
+  modelo_anio SMALLINT NOT NULL,
+  transmision VARCHAR(10) NOT NULL,
+  estado VARCHAR(17) NOT NULL,
+  fecha_venc_soat DATE NOT NULL,
+  fecha_venc_rtm DATE NOT NULL,
+  CHECK (tipo_vehiculo IN ('MOTOCICLETA','AUTOMOVIL','CAMIONETA')),
+  CHECK (transmision IN ('MECANICA','AUTOMATICA')),
+  CHECK (estado IN ('DISPONIBLE','EN_MANTENIMIENTO','FUERA_DE_SERVICIO')),
+  FOREIGN KEY (codigo_categoria) REFERENCES categoria_licencia(codigo_categoria)
+);
 
-4. **Community Hub:**
+CREATE TABLE modulo (
+  id_modulo INT PRIMARY KEY,
+  nombre VARCHAR(80) NOT NULL UNIQUE,
+  tipo VARCHAR(8) NOT NULL,
+  descripcion VARCHAR(200) NOT NULL,
+  CHECK (tipo IN ('TEORIA','TALLER','PRACTICA'))
+);
 
-- A community feature allows users to connect, share their eco-friendly achievements, and inspire others.
-- Users can join local eco-groups, organize clean-up events, and collaborate on sustainability projects.
+CREATE TABLE plan_curso (
+  codigo_categoria VARCHAR(2) NOT NULL,
+  id_modulo INT NOT NULL,
+  horas SMALLINT NOT NULL,
+  PRIMARY KEY (codigo_categoria, id_modulo),
+  CHECK (horas > 0),
+  FOREIGN KEY (codigo_categoria) REFERENCES categoria_licencia(codigo_categoria),
+  FOREIGN KEY (id_modulo) REFERENCES modulo(id_modulo)
+);
 
-5. **EcoEducator AI Assistant:**
+CREATE TABLE matricula (
+  id_matricula INT PRIMARY KEY,
+  id_alumno INT NOT NULL,
+  codigo_categoria VARCHAR(2) NOT NULL,
+  fecha_matricula DATE NOT NULL,
+  valor_pactado DECIMAL(10,2) NOT NULL,
+  estado VARCHAR(10) NOT NULL,
+  CHECK (valor_pactado > 0),
+  CHECK (estado IN ('ACTIVA','FINALIZADA','CANCELADA')),
+  FOREIGN KEY (id_alumno) REFERENCES alumno(id_alumno),
+  FOREIGN KEY (codigo_categoria) REFERENCES categoria_licencia(codigo_categoria)
+);
 
-- An AI-powered assistant, EcoEducator, provides personalized eco-tips, facts, and information based on users' preferences and habits.
-- Users can chat with EcoEducator for instant advice on sustainable living.
+CREATE TABLE pago (
+  id_pago INT PRIMARY KEY,
+  id_matricula INT NOT NULL,
+  fecha_pago DATE NOT NULL,
+  valor DECIMAL(10,2) NOT NULL,
+  medio_pago VARCHAR(13) NOT NULL,
+  CHECK (valor > 0),
+  CHECK (medio_pago IN ('EFECTIVO','TARJETA','TRANSFERENCIA')),
+  FOREIGN KEY (id_matricula) REFERENCES matricula(id_matricula)
+);
 
-## Technology Stack
+CREATE TABLE clase (
+  id_clase INT PRIMARY KEY,
+  id_matricula INT NOT NULL,
+  id_modulo INT NOT NULL,
+  id_instructor INT NOT NULL,
+  placa VARCHAR(7),
+  fecha DATE NOT NULL,
+  hora_inicio TIME NOT NULL,
+  horas SMALLINT NOT NULL,
+  estado VARCHAR(10) NOT NULL,
+  CHECK (horas BETWEEN 1 AND 4),
+  CHECK (estado IN ('PROGRAMADA','DICTADA','CANCELADA')),
+  FOREIGN KEY (id_matricula) REFERENCES matricula(id_matricula),
+  FOREIGN KEY (id_modulo) REFERENCES modulo(id_modulo),
+  FOREIGN KEY (id_instructor) REFERENCES instructor(id_instructor),
+  FOREIGN KEY (placa) REFERENCES vehiculo(placa)
+);
 
-- Frontend: React Native for cross-platform mobile app development.
-- Backend: Firebase for real-time data synchronization and user authentication.
-- Database: Firestore for scalable and flexible data storage.
-- AI Integration: Dialogflow for natural language processing and conversation with EcoEducator.
+CREATE TABLE examen (
+  id_examen INT PRIMARY KEY,
+  id_matricula INT NOT NULL,
+  tipo VARCHAR(8) NOT NULL,
+  fecha DATE NOT NULL,
+  puntaje DECIMAL(5,2) NOT NULL,
+  id_instructor INT NOT NULL,
+  CHECK (tipo IN ('TEORICO','PRACTICO')),
+  CHECK (puntaje BETWEEN 0 AND 100),
+  FOREIGN KEY (id_matricula) REFERENCES matricula(id_matricula),
+  FOREIGN KEY (id_instructor) REFERENCES instructor(id_instructor)
+);
 
-## Outcome
-
-EcoBuddy has successfully created a community of environmentally conscious individuals who actively participate in sustainable living practices. The app not only educates and motivates users but also provides tangible rewards for their commitment to a greener lifestyle, fostering a positive impact on the environment.
-
-## Client Testimonial
-
-> We couldn't be happier with the results delivered by Ethan Donovan. From the initial concept discussions to the final product, their responsiveness and collaborative approach were impressive. Our startup's website now stands out, thanks to their creative input and commitment to excellence.
-
-**Note:** This case study is entirely fictional and created for the purpose of showcasing [Dante Astro.js theme functionality](https://justgoodui.com/astro-themes/dante/).
+CREATE TABLE certificado_aptitud (
+  id_certificado INT PRIMARY KEY,
+  id_matricula INT NOT NULL UNIQUE,
+  numero_certificado VARCHAR(20) NOT NULL UNIQUE,
+  fecha_expedicion DATE NOT NULL,
+  FOREIGN KEY (id_matricula) REFERENCES matricula(id_matricula)
+);
+```
